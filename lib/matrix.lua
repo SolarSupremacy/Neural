@@ -127,19 +127,31 @@ end
 function func(x) return (math.tanh(x)) end
 matFunc(matrix, func)
 ]]
-function matrix.func(matrix, func)
+function matrix.func(mat, func)
   local newMat = {}
-  for a=1, #matrix do
+  for a=1, #mat do
     newMat[a] = {}
-    for b=1, #matrix[a] do
+    for b=1, #mat[a] do
       if (type(func) == "function") then
-        newMat[a][b] = func(matrix[a][b])
+        newMat[a][b] = func(mat[a][b])
       else
-        newMat[a][b] = matrix[a][b] * func
+        newMat[a][b] = mat[a][b] * func
       end
     end
   end
   return newMat
+end
+
+function matrix.tableAdd(table1, table2)
+  local newTable = {}
+  for k,v in ipairs(table1) do
+    newTable[k] = v
+  end
+  local table1num = #table1
+  for i=1, #table2 do
+    newTable[table1num + i] = table2[i]
+  end
+  return newTable
 end
 
 return (matrix)

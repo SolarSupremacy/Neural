@@ -55,8 +55,8 @@ end
 function love.load()
   
   timeWarp = 1
-  testSetup = {2, 4, 3}
-  testGenome = neural.makeGenome(testSetup)
+  testSetup = {6, 4, 4, 5}
+  testGenome = neural.makeGenome(testSetup, "recurrent")
   draw = true
   
 end
@@ -70,8 +70,22 @@ function love.update(dt)
       table.insert(testInput, math.random(-10, 10) / 10)
     end
     neural.process(testInput, testGenome)
-    
     -- Start Outputs, Physics Processing
+    
+    function mut(x)
+      local final = x
+      local rand = math.random()
+      if rand < 0.01 then
+        final = 1 --math.random(-20, 20)/10 + 10
+      elseif rand < 0.1 then
+        final = x + (2*math.random()-1)/10
+      end
+      return (final)
+    end
+    
+    for i=1, #testGenome[1] do
+      testGenome[1][i] = matrix.func(testGenome[1][i], mut)
+    end
     
     
     -- End Update
@@ -85,7 +99,7 @@ function love.draw()
   
   netText = ""
   netText = netText .. table.concat(testGenome[2][1], " ") .. "\n\n"
-  for i=1, (#testGenome[2])-1 do
+  for i=1, (#testGenome[1]) do
     netText = netText .. matrix.toString(testGenome[1][i], true, 5) .. "\n"
     netText = netText .. table.concat(testGenome[2][i+1], " ") .. "\n\n"
   end
