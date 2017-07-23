@@ -1,6 +1,6 @@
 --[[ **matrix.lua :: Matrix Functions**
 To use these functions in other files:
-local matrix = require("scripts.matrix")
+local matrix = require("lib.matrix")
 matrix.<function>(args)
 
 In function descriptions, a * after a variable means it is necessary.
@@ -107,7 +107,8 @@ function matrix.mul(matrix1, matrix2)
   local newMat = {}
   local val = 0
   for a=1, #matrix1 do
-    for b=1, #matrix2 do
+    newMat[a] = {}
+    for b=1, #matrix2[1] do
       val = 0
       for c=1, #matrix1[1] do
         val = val + (matrix1[a][c] * matrix2[c][b])

@@ -1,60 +1,61 @@
--- Base Neural Network Processor
-math.randomseed(os.time())
+--[[ **neural.lua :: Neural Network Functions**
+To use these functions in other files:
+local neural = require("lib.neural")
+matrix.<function>(args)
 
-print("---- ---- BNNP START ---- ----")
+In function descriptions, a * after a variable means it is necessary.
+]]
 
-neuralFormat = {2,4,3}
+local matrix = require("lib.matrix")
 
--- y: rows / size of previous layer, x: collums / size of new layer
--- random: if true, random values from -2>2, if false, all 0
-function newMatrix(y, x, random)
-  local newMat = {}
-  for i=0,y do
-    newMat[i]={}
-    for j=0,x do
-      if random then
-        newMat[i][j]=4*math.random()-2
-      else
-        newMat[i][j]=0
-      end
+-- Start Setup
+local neural = {}
+
+getmetatable("").__index = function(str,i)
+  if type(i) == 'number' then
+    return string.sub(str,i,i)
+  else
+    return string[i]
+  end
+end
+
+getmetatable("").__call = function(str,i,j)  
+  if type(i)~='table' then
+    return string.sub(str,i,j) 
+  else
+    local t={} 
+    for k,v in ipairs(i) do
+      t[k]=string.sub(str,v,v)
     end
-  end
-  return newMat
-end
-
-function printMatrix(matrix)
-  for i=1,#matrix do
-    print(table.concat(matrix[i], " "))
+    return table.concat(t)
   end
 end
+-- End Setup
 
--- Plug in both matricies to multiply.
--- Works for multiply a layer by a network.
-function matMul(matrix1, matrix2)
-  local newMat = {}
-  printMatrix(matrix1)
-  printMatrix(matrix2)
-  for a=1, #matrix1 do
-    newMat[a] = {}
-    for b=1, #matrix2 do
-      local val = 0
-      for c=1, #matrix1[1] do
-        val = val + (matrix1[a][c] * matrix2[c][b])
-      end
-      newMat[a][b] = val
+function neural.process(inputs, genome)
+  genome[2][1] = inputs
+  for i=1, #genome[2]-1 do
+    function act(x) return ((2.71828^(2*x)-1)/(2.71828^(2*x)+1)) end
+    for j=1, #genome[2][i] do
     end
+    genome[2][i+1] = matrix.func(matrix.mul({genome[2][i]}, genome[1][i]), act)[1] 
   end
-  return newMat
+  return (genome)
 end
 
-pringle = {{2, 1}, {1, 10}}
-prongle = {{1, 20}, {4, 3}}
-
-printMatrix(matMul(pringle, prongle))
-
-muffins = newMatrix(3, 10, true)
-
-
-for i=1,#muffins do
-  print(table.concat(muffins[i], " "))
+function neural.makeGenome(setup)
+  local genome = {{}, {}}
+  for i=1, (#setup-1) do
+    genome[1][i] = matrix.new(setup[i], setup[i+1], true, -2, 2)
+  end
+  for i=1, #setup do
+    local blanklist = {}
+    for j=1, setup[i] do
+      table.insert(blanklist, 0)
+    end
+    genome[2][i] = blanklist
+  end
+  return (genome)
 end
+
+return (neural)
