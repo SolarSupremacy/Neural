@@ -88,7 +88,11 @@ function matrix.toString(matrix, negatives, length)
         formatting = " " .. formatting
       end
       while (#formatting < longest) do
-        formatting = formatting .. "0"
+        if string.find(formatting, "%.") then
+          formatting = formatting .. "0"
+        else
+          formatting = formatting .. "."
+        end
       end
       line = line .. formatting(1, length) .. " "
     end
@@ -142,7 +146,7 @@ function matrix.func(mat, func)
   return newMat
 end
 
-function matrix.tableAdd(table1, table2)
+function matrix.tableComb(table1, table2)
   local newTable = {}
   for k,v in ipairs(table1) do
     newTable[k] = v
@@ -150,6 +154,14 @@ function matrix.tableAdd(table1, table2)
   local table1num = #table1
   for i=1, #table2 do
     newTable[table1num + i] = table2[i]
+  end
+  return newTable
+end
+
+function matrix.tableAdd(table1, table2)
+  local newTable = {}
+  for i=1, #table1 do
+    newTable[i] = table1[i] + table2[i]
   end
   return newTable
 end

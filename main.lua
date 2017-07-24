@@ -55,8 +55,8 @@ end
 function love.load()
   
   timeWarp = 1
-  testSetup = {6, 4, 4, 5}
-  testGenome = neural.makeGenome(testSetup, "recurrent")
+  testSetup = {30, 8, 6, 12}
+  testGenome = neural.makeGenome(testSetup, "recurrent", true)
   draw = true
   
 end
@@ -76,7 +76,7 @@ function love.update(dt)
       local final = x
       local rand = math.random()
       if rand < 0.01 then
-        final = 1 --math.random(-20, 20)/10 + 10
+        final = math.random(-20, 20)/10
       elseif rand < 0.1 then
         final = x + (2*math.random()-1)/10
       end
