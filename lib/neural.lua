@@ -38,18 +38,32 @@ function neural.process(inputs, genome)
   
   
   for i=1, #genome[1] do
+    local prog = {}
     if (#genome[1][i]) == (#genome[2][i]) then
-      genome[2][i+1] = matrix.func(matrix.mul({genome[2][i]}, genome[1][i]), act)[1]
+      
+      prog = matrix.mul({genome[2][i]}, genome[1][i])
+      if not (genome[3] == nil) then
+        prog = {matrix.tableAdd(prog[1], genome[3][i])}
+      end
+      genome[2][i+1] = matrix.func(prog, act)[1]
+      
     elseif (#genome[1][i]) == (#genome[2][i] + #genome[2][i+1]) then
-      genome[2][i+1] = matrix.func(matrix.mul({matrix.tableAdd(genome[2][i], genome[2][i+1])}, genome[1][i]), act)[1]
+      
+      prog = matrix.mul({matrix.tableComb(genome[2][i], genome[2][i+1])}, genome[1][i])
+      if not (genome[3] == nil) then
+        prog = {matrix.tableAdd(prog[1], genome[3][i])}
+      end
+      genome[2][i+1] = matrix.func(prog, act)[1]
+      
     end
   end
   
   return (genome)
 end
 
-function neural.makeGenome(setup, genType)
+function neural.makeGenome(setup, genType, bias)
   genType = genType or "normal"
+  bias = bias or false
   local genome = {{}, {}}
   for i=1, (#setup-1) do
     if (genType == "recurrent") then
@@ -59,11 +73,25 @@ function neural.makeGenome(setup, genType)
     end
   end
   for i=1, #setup do
-    local blanklist = {}
+    local blankList = {}
     for j=1, setup[i] do
-      table.insert(blanklist, 0)
+      table.insert(blankList, 0)
     end
-    genome[2][i] = blanklist
+    genome[2][i] = blankList
+  end
+  if bias then
+    genome[3] = {}
+    for i=1, #setup-1 do
+      local biasList = {}
+      for j=1, setup[i+1] do
+        table.insert(biasList, math.random(-500, 500)/100)
+      end
+      genome[3][i] = biasList
+    end
+    for i=1, #genome[3] do
+      print(table.concat(genome[3][i], "\t"))
+    end
+    
   end
   
   return (genome)
