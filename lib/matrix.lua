@@ -92,7 +92,7 @@ function matrix.toString(matrix, negatives, length)
           formatting = formatting .. "0"
         else
           formatting = formatting .. "."
-        end  
+        end
       end
       line = line .. formatting(1, length) .. " "
     end
